@@ -94,14 +94,11 @@ class OwnerController {
 	@GetMapping("/owners")
 	public String processFindForm(@RequestParam(defaultValue = "1") int page, Owner owner, BindingResult result,
 			Model model) {
-		// allow parameterless GET request for /owners to return all records
-		String lastName = owner.getLastName();
-		if (lastName == null) {
-			lastName = ""; // empty string signifies broadest possible search
-		}
 
 		// find owners by last name
-		Page<Owner> ownersResults = findPaginatedForOwnersLastName(page, lastName);
+		int pageSize = 5;
+		Pageable pageable = PageRequest.of(page - 1, pageSize);
+		var ownersResults = owners.findByLastNameStartingWith(owner.getLastName(), pageable);
 		if (ownersResults.isEmpty()) {
 			// no owners found
 			result.rejectValue("lastName", "notFound", "not found");
@@ -115,22 +112,12 @@ class OwnerController {
 		}
 
 		// multiple owners found
-		return addPaginationModel(page, model, ownersResults);
-	}
-
-	private String addPaginationModel(int page, Model model, Page<Owner> paginated) {
-		List<Owner> listOwners = paginated.getContent();
+		List<Owner> listOwners = ownersResults.getContent();
 		model.addAttribute("currentPage", page);
-		model.addAttribute("totalPages", paginated.getTotalPages());
-		model.addAttribute("totalItems", paginated.getTotalElements());
+		model.addAttribute("totalPages", ownersResults.getTotalPages());
+		model.addAttribute("totalItems", ownersResults.getTotalElements());
 		model.addAttribute("listOwners", listOwners);
 		return "owners/ownersList";
-	}
-
-	private Page<Owner> findPaginatedForOwnersLastName(int page, String lastname) {
-		int pageSize = 5;
-		Pageable pageable = PageRequest.of(page - 1, pageSize);
-		return owners.findByLastNameStartingWith(lastname, pageable);
 	}
 
 	@GetMapping("/owners/{ownerId}/edit")
@@ -152,6 +139,7 @@ class OwnerController {
 			return "redirect:/owners/{ownerId}/edit";
 		}
 
+		// TODO event
 		owner.setId(ownerId);
 		this.owners.save(owner);
 		redirectAttributes.addFlashAttribute("message", "Owner Values Updated");

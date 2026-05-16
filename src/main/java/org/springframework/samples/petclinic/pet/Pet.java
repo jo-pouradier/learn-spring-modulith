@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.samples.petclinic.model.NamedEntity;
 
@@ -46,6 +47,7 @@ import org.springframework.samples.petclinic.visit.Visit;
 @Table(name = "pets")
 public class Pet extends NamedEntity {
 
+	@NotNull
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate birthDate;

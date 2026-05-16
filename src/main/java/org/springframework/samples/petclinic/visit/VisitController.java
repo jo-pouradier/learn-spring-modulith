@@ -78,7 +78,7 @@ class VisitController {
 		model.put("owner", owner);
 
 		Visit visit = new Visit();
-		pet.addVisit(visit);
+		pet.addVisit(visit); // TODO event
 		return visit;
 	}
 
@@ -98,7 +98,7 @@ class VisitController {
 			return "pets/createOrUpdateVisitForm";
 		}
 
-		owner.addVisit(petId, visit);
+		owner.addVisit(petId, visit); // TODO event
 		this.owners.save(owner);
 		redirectAttributes.addFlashAttribute("message", "Your visit has been booked");
 		return "redirect:/owners/{ownerId}";
