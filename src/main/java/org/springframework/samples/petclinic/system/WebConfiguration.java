@@ -22,7 +22,7 @@ import java.util.Locale;
  */
 @Configuration
 @SuppressWarnings("unused")
-public class WebConfiguration implements WebMvcConfigurer {
+class WebConfiguration implements WebMvcConfigurer {
 
 	/**
 	 * Uses session storage to remember the user’s language setting across requests.
@@ -30,7 +30,7 @@ public class WebConfiguration implements WebMvcConfigurer {
 	 * @return session-based {@link LocaleResolver}
 	 */
 	@Bean
-	public LocaleResolver localeResolver() {
+	LocaleResolver localeResolver() {
 		SessionLocaleResolver resolver = new SessionLocaleResolver();
 		resolver.setDefaultLocale(Locale.ENGLISH);
 		return resolver;
@@ -42,7 +42,7 @@ public class WebConfiguration implements WebMvcConfigurer {
 	 * @return a {@link LocaleChangeInterceptor} that handles the change
 	 */
 	@Bean
-	public LocaleChangeInterceptor localeChangeInterceptor() {
+	LocaleChangeInterceptor localeChangeInterceptor() {
 		LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
 		interceptor.setParamName("lang");
 		return interceptor;

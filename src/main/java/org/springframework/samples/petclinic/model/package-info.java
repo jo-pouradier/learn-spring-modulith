@@ -17,4 +17,7 @@
 /**
  * The classes in this package represent utilities used by the domain.
  */
+@ApplicationModule(allowedDependencies = {})
 package org.springframework.samples.petclinic.model;
+
+import org.springframework.modulith.ApplicationModule;

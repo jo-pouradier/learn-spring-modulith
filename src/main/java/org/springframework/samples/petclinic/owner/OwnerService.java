@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.owner;
 
+import org.springframework.modulith.NamedInterface;
 import org.springframework.samples.petclinic.model.AddPetEvent;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
@@ -9,6 +10,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import java.util.Optional;
 
 @Service
+@NamedInterface("OwnerService")
 public class OwnerService {
 
 	private final OwnerRepository ownerRepository;

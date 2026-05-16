@@ -28,7 +28,7 @@ import org.springframework.samples.petclinic.model.PetType;
  * @author Patrick Baumgartner
  */
 
-public interface PetTypeRepository extends JpaRepository<PetType, Integer> {
+interface PetTypeRepository extends JpaRepository<PetType, Integer> {
 
 	/**
 	 * Retrieve all {@link PetType}s from the data store.

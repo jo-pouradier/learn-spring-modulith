@@ -30,7 +30,7 @@ import org.springframework.validation.Validator;
  * @author Ken Krebs
  * @author Juergen Hoeller
  */
-public class PetValidator implements Validator {
+class PetValidator implements Validator {
 
 	private static final String REQUIRED = "required";
 

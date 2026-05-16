@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@ApplicationModule(allowedDependencies = "model")
 package org.springframework.samples.petclinic.owner;
 
 import org.springframework.modulith.ApplicationModule;

@@ -54,18 +54,18 @@ class PetController {
 	}
 
 	@ModelAttribute("types")
-	public Collection<PetType> populatePetTypes() {
+	Collection<PetType> populatePetTypes() {
 		return this.types.findPetTypes();
 	}
 
 	@ModelAttribute("owner")
-	public Owner findOwner(@PathVariable("ownerId") int ownerId) {
+	Owner findOwner(@PathVariable("ownerId") int ownerId) {
 		return ownerService.findById(ownerId)
 			.orElseThrow(() -> new IllegalArgumentException("Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
 	}
 
 	@ModelAttribute("pet")
-	public Pet findPet(@PathVariable int ownerId, @PathVariable(required = false) Integer petId) {
+	Pet findPet(@PathVariable int ownerId, @PathVariable(required = false) Integer petId) {
 		if (petId == null) {
 			return new Pet();
 		}
@@ -76,25 +76,25 @@ class PetController {
 	}
 
 	@InitBinder("owner")
-	public void initOwnerBinder(WebDataBinder dataBinder) {
+	void initOwnerBinder(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id", "*.id");
 	}
 
 	@InitBinder("pet")
-	public void initPetBinder(WebDataBinder dataBinder) {
+	void initPetBinder(WebDataBinder dataBinder) {
 		dataBinder.setValidator(new PetValidator());
 		dataBinder.setDisallowedFields("id", "*.id");
 	}
 
 	@GetMapping("/pets/new")
-	public String initCreationForm(Owner owner, ModelMap model) {
+	String initCreationForm(Owner owner, ModelMap model) {
 		Pet pet = new Pet();
 		model.put("pet", pet);
 		return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 	}
 
 	@PostMapping("/pets/new")
-	public String processCreationForm(Owner owner, @Valid Pet pet, BindingResult result,
+	String processCreationForm(Owner owner, @Valid Pet pet, BindingResult result,
 									  RedirectAttributes redirectAttributes) {
 
 		if (StringUtils.hasText(pet.getName()) && pet.isNew() && owner.getPet(pet.getName(), true) != null) {
@@ -118,12 +118,12 @@ class PetController {
 
 
 	@GetMapping("/pets/{petId}/edit")
-	public String initUpdateForm() {
+	String initUpdateForm() {
 		return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 	}
 
 	@PostMapping("/pets/{petId}/edit")
-	public String processUpdateForm(Owner owner, @Valid Pet pet, BindingResult result,
+	String processUpdateForm(Owner owner, @Valid Pet pet, BindingResult result,
 									RedirectAttributes redirectAttributes) {
 
 		// checking if the pet name already exists for the owner
