@@ -59,26 +59,21 @@ class VisitController {
 	 * Called before each and every @RequestMapping annotated method. 2 goals: - Make sure
 	 * we always have fresh data - Since we do not use the session scope, make sure that
 	 * Pet object always has an id (Even though id is not part of the form fields)
+	 *
 	 * @param petId
 	 * @return Pet
 	 */
 	@ModelAttribute("visit")
 	public Visit loadPetWithVisit(@PathVariable("ownerId") int ownerId, @PathVariable("petId") int petId,
-			Map<String, Object> model) {
-		Optional<Owner> optionalOwner = owners.findById(ownerId);
-		Owner owner = optionalOwner.orElseThrow(() -> new IllegalArgumentException(
+								  Map<String, Object> model) {
+		var owner = owners.findById(ownerId).orElseThrow(
+			() -> new IllegalArgumentException(
 				"Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
 
-		Pet pet = owner.getPet(petId);
-		if (pet == null) {
-			throw new IllegalArgumentException(
-					"Pet with id " + petId + " not found for owner with id " + ownerId + ".");
-		}
+		Visit visit = new Visit();
+		var pet = owner.getPet(petId);
 		model.put("pet", pet);
 		model.put("owner", owner);
-
-		Visit visit = new Visit();
-		pet.addVisit(visit); // TODO event
 		return visit;
 	}
 
@@ -93,7 +88,7 @@ class VisitController {
 	// called
 	@PostMapping("/owners/{ownerId}/pets/{petId}/visits/new")
 	public String processNewVisitForm(@ModelAttribute Owner owner, @PathVariable int petId, @Valid Visit visit,
-			BindingResult result, RedirectAttributes redirectAttributes) {
+									  BindingResult result, RedirectAttributes redirectAttributes) {
 		if (result.hasErrors()) {
 			return "pets/createOrUpdateVisitForm";
 		}
