@@ -1,4 +1,4 @@
-@ApplicationModule(allowedDependencies = {"model", "owner::OwnerService"})
+@ApplicationModule(allowedDependencies = {"model"})
 package org.springframework.samples.petclinic.pet;
 
 import org.springframework.modulith.ApplicationModule;

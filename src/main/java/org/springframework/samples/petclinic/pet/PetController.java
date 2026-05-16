@@ -16,6 +16,8 @@
 package org.springframework.samples.petclinic.pet;
 
 import jakarta.validation.Valid;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.samples.petclinic.model.AddPetEvent;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
@@ -46,11 +48,15 @@ class PetController {
 	private static final String VIEWS_PETS_CREATE_OR_UPDATE_FORM = "pets/createOrUpdatePetForm";
 
 	private final PetTypeRepository types;
-	private final OwnerService ownerService;
+	private final ApplicationEventPublisher eventPublisher;
+	private final PetRepo petRepo;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
-	PetController(PetTypeRepository types, OwnerService ownerService) {
+	PetController(PetTypeRepository types, ApplicationEventPublisher eventPublisher, PetRepo petRepo, ApplicationEventPublisher applicationEventPublisher) {
 		this.types = types;
-		this.ownerService = ownerService;
+		this.eventPublisher = eventPublisher;
+		this.petRepo = petRepo;
+		this.applicationEventPublisher = applicationEventPublisher;
 	}
 
 	@ModelAttribute("types")
@@ -58,11 +64,6 @@ class PetController {
 		return this.types.findPetTypes();
 	}
 
-	@ModelAttribute("owner")
-	Owner findOwner(@PathVariable("ownerId") int ownerId) {
-		return ownerService.findById(ownerId)
-			.orElseThrow(() -> new IllegalArgumentException("Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
-	}
 
 	@ModelAttribute("pet")
 	Pet findPet(@PathVariable int ownerId, @PathVariable(required = false) Integer petId) {
@@ -70,9 +71,8 @@ class PetController {
 			return new Pet();
 		}
 
-		return ownerService.findById(ownerId)
-			.orElseThrow(() -> new IllegalArgumentException("Owner not found with id: " + ownerId + ". Please ensure the ID is correct "))
-			.getPet(petId);
+		return petRepo.findById(petId)
+			.orElseThrow(() -> new IllegalArgumentException("Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
 	}
 
 	@InitBinder("owner")
@@ -95,7 +95,7 @@ class PetController {
 
 	@PostMapping("/pets/new")
 	String processCreationForm(Owner owner, @Valid Pet pet, BindingResult result,
-									  RedirectAttributes redirectAttributes) {
+							   RedirectAttributes redirectAttributes) {
 
 		if (StringUtils.hasText(pet.getName()) && pet.isNew() && owner.getPet(pet.getName(), true) != null) {
 			result.rejectValue("name", "duplicate", "already exists");
@@ -110,7 +110,7 @@ class PetController {
 			return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 		}
 
-		ownerService.addPet(owner, pet); // TODO event
+		applicationEventPublisher.publishEvent(new AddPetEvent(owner, pet));
 
 		redirectAttributes.addFlashAttribute("message", "New Pet has been Added");
 		return "redirect:/owners/{ownerId}";
@@ -124,7 +124,7 @@ class PetController {
 
 	@PostMapping("/pets/{petId}/edit")
 	String processUpdateForm(Owner owner, @Valid Pet pet, BindingResult result,
-									RedirectAttributes redirectAttributes) {
+							 RedirectAttributes redirectAttributes) {
 
 		// checking if the pet name already exists for the owner
 		var existingPet = owner.getPet(pet.getName(), false);
@@ -162,9 +162,9 @@ class PetController {
 			existingPet.setName(pet.getName());
 			existingPet.setBirthDate(pet.getBirthDate());
 			existingPet.setType(pet.getType());
-			ownerService.addPet(owner, existingPet);
+			applicationEventPublisher.publishEvent(new AddPetEvent(owner, existingPet));
 		} else {
-			ownerService.addPet(owner, pet);
+			applicationEventPublisher.publishEvent(new AddPetEvent(owner, pet));
 		}
 	}
 

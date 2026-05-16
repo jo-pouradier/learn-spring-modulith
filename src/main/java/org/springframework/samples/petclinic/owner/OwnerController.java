@@ -56,6 +56,12 @@ class OwnerController {
 		this.owners = owners;
 	}
 
+	@ModelAttribute("owner")
+	Owner findOwner(@PathVariable("ownerId") int ownerId) {
+		return owners.findById(ownerId)
+			.orElseThrow(() -> new IllegalArgumentException("Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
+	}
+
 	@InitBinder
 	void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id", "*.id");
