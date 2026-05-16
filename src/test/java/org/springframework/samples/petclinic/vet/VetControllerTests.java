@@ -25,6 +25,8 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.samples.petclinic.model.BaseEntity;
+import org.springframework.samples.petclinic.model.Specialty;
 import org.springframework.test.context.aot.DisabledInAotMode;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -51,16 +53,16 @@ class VetControllerTests {
 	@MockitoBean
 	private VetRepository vets;
 
-	private Vet james() {
-		Vet james = new Vet();
+	private BaseEntity.Vet james() {
+		BaseEntity.Vet james = new BaseEntity.Vet();
 		james.setFirstName("James");
 		james.setLastName("Carter");
 		james.setId(1);
 		return james;
 	}
 
-	private Vet helen() {
-		Vet helen = new Vet();
+	private BaseEntity.Vet helen() {
+		BaseEntity.Vet helen = new BaseEntity.Vet();
 		helen.setFirstName("Helen");
 		helen.setLastName("Leary");
 		helen.setId(2);
@@ -75,7 +77,7 @@ class VetControllerTests {
 	void setup() {
 		given(this.vets.findAll()).willReturn(Lists.newArrayList(james(), helen()));
 		given(this.vets.findAll(any(Pageable.class)))
-			.willReturn(new PageImpl<Vet>(Lists.newArrayList(james(), helen())));
+			.willReturn(new PageImpl<BaseEntity.Vet>(Lists.newArrayList(james(), helen())));
 
 	}
 

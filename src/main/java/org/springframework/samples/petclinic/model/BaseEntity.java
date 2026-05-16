@@ -16,11 +16,14 @@
 package org.springframework.samples.petclinic.model;
 
 import java.io.Serializable;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * Simple JavaBean domain object with an id property. Used as a base class for objects
@@ -48,4 +51,44 @@ public class BaseEntity implements Serializable {
 		return this.id == null;
 	}
 
+	/**
+	 * Simple JavaBean domain object representing a veterinarian.
+	 *
+	 * @author Ken Krebs
+	 * @author Juergen Hoeller
+	 * @author Sam Brannen
+	 * @author Arjen Poutsma
+	 */
+	@Entity
+	@Table(name = "vets")
+	public static class Vet extends Person {
+
+		@ManyToMany(fetch = FetchType.EAGER)
+		@JoinTable(name = "vet_specialties", joinColumns = @JoinColumn(name = "vet_id"),
+				inverseJoinColumns = @JoinColumn(name = "specialty_id"))
+		private Set<Specialty> specialties;
+
+		protected Set<Specialty> getSpecialtiesInternal() {
+			if (this.specialties == null) {
+				this.specialties = new HashSet<>();
+			}
+			return this.specialties;
+		}
+
+		@XmlElement
+		public List<Specialty> getSpecialties() {
+			return getSpecialtiesInternal().stream()
+				.sorted(Comparator.comparing(NamedEntity::getName))
+				.collect(Collectors.toList());
+		}
+
+		public int getNrOfSpecialties() {
+			return getSpecialtiesInternal().size();
+		}
+
+		public void addSpecialty(Specialty specialty) {
+			getSpecialtiesInternal().add(specialty);
+		}
+
+	}
 }

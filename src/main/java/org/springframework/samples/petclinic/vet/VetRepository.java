@@ -20,6 +20,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.Repository;
+import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
@@ -35,7 +36,7 @@ import java.util.Collection;
  * @author Sam Brannen
  * @author Michael Isvy
  */
-public interface VetRepository extends Repository<Vet, Integer> {
+public interface VetRepository extends Repository<BaseEntity.Vet, Integer> {
 
 	/**
 	 * Retrieve all <code>Vet</code>s from the data store.
@@ -43,7 +44,7 @@ public interface VetRepository extends Repository<Vet, Integer> {
 	 */
 	@Transactional(readOnly = true)
 	@Cacheable("vets")
-	Collection<Vet> findAll() throws DataAccessException;
+	Collection<BaseEntity.Vet> findAll() throws DataAccessException;
 
 	/**
 	 * Retrieve all <code>Vet</code>s from data store in Pages
@@ -53,6 +54,6 @@ public interface VetRepository extends Repository<Vet, Integer> {
 	 */
 	@Transactional(readOnly = true)
 	@Cacheable("vets")
-	Page<Vet> findAll(Pageable pageable) throws DataAccessException;
+	Page<BaseEntity.Vet> findAll(Pageable pageable) throws DataAccessException;
 
 }

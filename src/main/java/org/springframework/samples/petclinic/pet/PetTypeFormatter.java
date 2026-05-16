@@ -16,6 +16,7 @@
 package org.springframework.samples.petclinic.pet;
 
 import org.springframework.format.Formatter;
+import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;

@@ -14,3 +14,5 @@
  * limitations under the License.
  */
 package org.springframework.samples.petclinic.system;
+
+import org.springframework.modulith.ApplicationModule;

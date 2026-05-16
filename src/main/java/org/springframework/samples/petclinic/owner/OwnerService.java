@@ -1,7 +1,10 @@
 package org.springframework.samples.petclinic.owner;
 
-import org.springframework.samples.petclinic.pet.Pet;
+import org.springframework.samples.petclinic.model.AddPetEvent;
+import org.springframework.samples.petclinic.model.Owner;
+import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.Optional;
 
@@ -17,6 +20,12 @@ public class OwnerService {
 	public void addPet(Owner owner, Pet pet) {
 		owner.addPet(pet);
 		ownerRepository.save(owner);
+	}
+
+	@TransactionalEventListener
+	public void addPet(AddPetEvent event) {
+		event.owner().addPet(event.pet());
+		ownerRepository.save(event.owner());
 	}
 
 	public Optional<Owner> findById(Integer ownerId) {

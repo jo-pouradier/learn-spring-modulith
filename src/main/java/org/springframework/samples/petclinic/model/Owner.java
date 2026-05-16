@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.samples.petclinic.owner;
+package org.springframework.samples.petclinic.model;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import org.springframework.core.style.ToStringCreator;
-import org.springframework.samples.petclinic.model.Person;
-import org.springframework.samples.petclinic.pet.Pet;
-import org.springframework.samples.petclinic.visit.Visit;
 import org.springframework.util.Assert;
 
 import jakarta.persistence.CascadeType;

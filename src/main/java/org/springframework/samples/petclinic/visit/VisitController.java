@@ -16,7 +16,8 @@
 package org.springframework.samples.petclinic.visit;
 
 import jakarta.validation.Valid;
-import org.springframework.samples.petclinic.owner.Owner;
+import org.springframework.samples.petclinic.model.Owner;
+import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.owner.OwnerService;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
