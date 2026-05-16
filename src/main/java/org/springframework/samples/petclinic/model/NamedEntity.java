@@ -31,7 +31,6 @@ import jakarta.validation.constraints.NotBlank;
 public class NamedEntity extends BaseEntity {
 
 	@Column
-	@NotBlank
 	private String name;
 
 	public String getName() {

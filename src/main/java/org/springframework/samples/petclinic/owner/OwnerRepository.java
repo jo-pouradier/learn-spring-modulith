@@ -33,11 +33,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author Michael Isvy
  * @author Wick Dynex
  */
-public interface OwnerRepository extends JpaRepository<Owner, Integer> {
+interface OwnerRepository extends JpaRepository<Owner, Integer> {
 
 	/**
 	 * Retrieve {@link Owner}s from the data store by last name, returning all owners
 	 * whose last name <i>starts</i> with the given name.
+	 *
 	 * @param lastName Value to search for
 	 * @return a Collection of matching {@link Owner}s (or an empty Collection if none
 	 * found)
@@ -51,11 +52,12 @@ public interface OwnerRepository extends JpaRepository<Owner, Integer> {
 	 * no {@link Owner} is found with the provided id, it will return an empty
 	 * {@link Optional}.
 	 * </p>
+	 *
 	 * @param id the id to search for
 	 * @return an {@link Optional} containing the {@link Owner} if found, or an empty
 	 * {@link Optional} if not found.
 	 * @throws IllegalArgumentException if the id is null (assuming null is not a valid
-	 * input for id)
+	 *                                  input for id)
 	 */
 	Optional<Owner> findById(Integer id);
 

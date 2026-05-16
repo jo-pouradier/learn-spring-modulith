@@ -15,23 +15,16 @@
  */
 package org.springframework.samples.petclinic.visit;
 
-import java.util.Map;
-import java.util.Optional;
-
+import jakarta.validation.Valid;
 import org.springframework.samples.petclinic.owner.Owner;
-import org.springframework.samples.petclinic.owner.OwnerRepository;
-import org.springframework.samples.petclinic.pet.Pet;
+import org.springframework.samples.petclinic.owner.OwnerService;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-
-import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Map;
 
 /**
  * @author Juergen Hoeller
@@ -44,10 +37,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 class VisitController {
 
-	private final OwnerRepository owners;
+	private final OwnerService ownerService;
 
-	public VisitController(OwnerRepository owners) {
-		this.owners = owners;
+	public VisitController(OwnerService ownerService) {
+		this.ownerService = ownerService;
 	}
 
 	@InitBinder
@@ -66,14 +59,13 @@ class VisitController {
 	@ModelAttribute("visit")
 	public Visit loadPetWithVisit(@PathVariable("ownerId") int ownerId, @PathVariable("petId") int petId,
 								  Map<String, Object> model) {
-		var owner = owners.findById(ownerId).orElseThrow(
-			() -> new IllegalArgumentException(
-				"Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
-
-		Visit visit = new Visit();
+		var owner = ownerService.findById(ownerId).orElseThrow(() -> new IllegalArgumentException("Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
 		var pet = owner.getPet(petId);
+		var visit = new Visit();
+
 		model.put("pet", pet);
 		model.put("owner", owner);
+
 		return visit;
 	}
 
@@ -94,7 +86,8 @@ class VisitController {
 		}
 
 		owner.addVisit(petId, visit); // TODO event
-		this.owners.save(owner);
+		ownerService.save(owner);
+
 		redirectAttributes.addFlashAttribute("message", "Your visit has been booked");
 		return "redirect:/owners/{ownerId}";
 	}

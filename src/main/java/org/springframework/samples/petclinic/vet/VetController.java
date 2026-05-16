@@ -54,6 +54,7 @@ class VetController {
 		model.addAttribute("totalPages", paginated.getTotalPages());
 		model.addAttribute("totalItems", paginated.getTotalElements());
 		model.addAttribute("listVets", listVets);
+
 		return "vets/vetList";
 	}
 

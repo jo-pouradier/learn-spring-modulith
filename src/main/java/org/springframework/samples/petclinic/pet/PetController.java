@@ -15,13 +15,9 @@
  */
 package org.springframework.samples.petclinic.pet;
 
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
-
+import jakarta.validation.Valid;
 import org.springframework.samples.petclinic.owner.Owner;
-import org.springframework.samples.petclinic.owner.OwnerRepository;
+import org.springframework.samples.petclinic.owner.OwnerService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
@@ -29,10 +25,12 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
-
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author Juergen Hoeller
@@ -46,13 +44,12 @@ class PetController {
 
 	private static final String VIEWS_PETS_CREATE_OR_UPDATE_FORM = "pets/createOrUpdatePetForm";
 
-	private final OwnerRepository owners;
-
 	private final PetTypeRepository types;
+	private final OwnerService ownerService;
 
-	public PetController(OwnerRepository owners, PetTypeRepository types) {
-		this.owners = owners;
+	PetController(PetTypeRepository types, OwnerService ownerService) {
 		this.types = types;
+		this.ownerService = ownerService;
 	}
 
 	@ModelAttribute("types")
@@ -62,24 +59,19 @@ class PetController {
 
 	@ModelAttribute("owner")
 	public Owner findOwner(@PathVariable("ownerId") int ownerId) {
-		Optional<Owner> optionalOwner = this.owners.findById(ownerId);
-		Owner owner = optionalOwner.orElseThrow(() -> new IllegalArgumentException(
-			"Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
-		return owner;
+		return ownerService.findById(ownerId)
+			.orElseThrow(() -> new IllegalArgumentException("Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
 	}
 
 	@ModelAttribute("pet")
-	public Pet findPet(@PathVariable("ownerId") int ownerId,
-					   @PathVariable(name = "petId", required = false) Integer petId) {
-
+	public Pet findPet(@PathVariable int ownerId, @PathVariable(required = false) Integer petId) {
 		if (petId == null) {
 			return new Pet();
 		}
 
-		Optional<Owner> optionalOwner = this.owners.findById(ownerId);
-		Owner owner = optionalOwner.orElseThrow(() -> new IllegalArgumentException(
-			"Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
-		return owner.getPet(petId);
+		return ownerService.findById(ownerId)
+			.orElseThrow(() -> new IllegalArgumentException("Owner not found with id: " + ownerId + ". Please ensure the ID is correct "))
+			.getPet(petId);
 	}
 
 	@InitBinder("owner")
@@ -96,7 +88,7 @@ class PetController {
 	@GetMapping("/pets/new")
 	public String initCreationForm(Owner owner, ModelMap model) {
 		Pet pet = new Pet();
-		owner.addPet(pet);
+		model.put("pet", pet);
 		return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 	}
 
@@ -117,11 +109,12 @@ class PetController {
 			return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 		}
 
-		owner.addPet(pet);
-		this.owners.save(owner);
+		ownerService.addPet(owner, pet); // TODO event
+
 		redirectAttributes.addFlashAttribute("message", "New Pet has been Added");
 		return "redirect:/owners/{ownerId}";
 	}
+
 
 	@GetMapping("/pets/{petId}/edit")
 	public String initUpdateForm() {
@@ -148,6 +141,7 @@ class PetController {
 		}
 
 		updatePetDetails(owner, pet); // TODO event
+
 		redirectAttributes.addFlashAttribute("message", "Pet details has been edited");
 		return "redirect:/owners/{ownerId}";
 	}
@@ -167,10 +161,10 @@ class PetController {
 			existingPet.setName(pet.getName());
 			existingPet.setBirthDate(pet.getBirthDate());
 			existingPet.setType(pet.getType());
+			ownerService.addPet(owner, existingPet);
 		} else {
-			owner.addPet(pet);
+			ownerService.addPet(owner, pet);
 		}
-		this.owners.save(owner);
 	}
 
 }

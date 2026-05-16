@@ -25,7 +25,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.samples.petclinic.owner.Owner;
-import org.springframework.samples.petclinic.owner.OwnerRepository;
+import org.springframework.samples.petclinic.owner.OwnerService;
 import org.springframework.test.context.aot.DisabledInAotMode;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -61,7 +61,7 @@ class PetControllerTests {
 	private MockMvc mockMvc;
 
 	@MockitoBean
-	private OwnerRepository owners;
+	private OwnerService owners;
 
 	@MockitoBean
 	private PetTypeRepository types;

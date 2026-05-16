@@ -47,7 +47,6 @@ import org.springframework.samples.petclinic.visit.Visit;
 @Table(name = "pets")
 public class Pet extends NamedEntity {
 
-	@NotNull
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate birthDate;
