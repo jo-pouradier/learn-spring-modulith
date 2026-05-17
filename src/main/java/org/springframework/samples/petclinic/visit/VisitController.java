@@ -16,10 +16,14 @@
 package org.springframework.samples.petclinic.visit;
 
 import jakarta.validation.Valid;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.samples.petclinic.event.AddVisitEvent;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.owner.OwnerService;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -38,10 +42,15 @@ import java.util.Map;
 @Controller
 class VisitController {
 
+	public static final int VISIT_PRICE = 100;
 	private final OwnerService ownerService;
+	private final ApplicationEventPublisher applicationEventPublisher;
+	private final TransactionTemplate transactionTemplate;
 
-	VisitController(OwnerService ownerService) {
+	VisitController(OwnerService ownerService, ApplicationEventPublisher applicationEventPublisher, TransactionTemplate transactionTemplate) {
 		this.ownerService = ownerService;
+		this.applicationEventPublisher = applicationEventPublisher;
+		this.transactionTemplate = transactionTemplate;
 	}
 
 	@InitBinder
@@ -59,7 +68,7 @@ class VisitController {
 	 */
 	@ModelAttribute("visit")
 	Visit loadPetWithVisit(@PathVariable("ownerId") int ownerId, @PathVariable("petId") int petId,
-								  Map<String, Object> model) {
+						   Map<String, Object> model) {
 		var owner = ownerService.findById(ownerId).orElseThrow(() -> new IllegalArgumentException("Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
 		var pet = owner.getPet(petId);
 		var visit = new Visit();
@@ -79,15 +88,15 @@ class VisitController {
 
 	// Spring MVC calls method loadPetWithVisit(...) before processNewVisitForm is
 	// called
+	@Transactional
 	@PostMapping("/owners/{ownerId}/pets/{petId}/visits/new")
 	String processNewVisitForm(@ModelAttribute Owner owner, @PathVariable int petId, @Valid Visit visit,
-									  BindingResult result, RedirectAttributes redirectAttributes) {
+							   BindingResult result, RedirectAttributes redirectAttributes) {
 		if (result.hasErrors()) {
 			return "pets/createOrUpdateVisitForm";
 		}
 
-		owner.addVisit(petId, visit); // TODO event
-		ownerService.save(owner);
+		applicationEventPublisher.publishEvent(new AddVisitEvent(owner, visit, petId, VISIT_PRICE));
 
 		redirectAttributes.addFlashAttribute("message", "Your visit has been booked");
 		return "redirect:/owners/{ownerId}";

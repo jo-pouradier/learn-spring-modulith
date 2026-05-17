@@ -1,0 +1,45 @@
+@startuml
+title <size:24>PetClinicApplicationTest</size>
+
+set separator none
+top to bottom direction
+
+<style>
+  root {
+    BackgroundColor: #ffffff
+    FontColor: #444444
+  }
+</style>
+
+!include <C4/C4>
+!include <C4/C4_Context>
+!include <C4/C4_Component>
+
+System_Boundary("PetClinicApplicationTest_boundary", "PetClinicApplicationTest", $tags="") {
+  Container_Boundary("PetClinicApplicationTest.PetClinicApplicationTest_boundary", "PetClinicApplicationTest", $tags="") {
+    Component(PetClinicApplicationTest.PetClinicApplicationTest.Visit, "Visit", $techn="Module", $descr="", $tags="", $link="")
+    Component(PetClinicApplicationTest.PetClinicApplicationTest.Model, "Model", $techn="Module", $descr="", $tags="", $link="")
+    Component(PetClinicApplicationTest.PetClinicApplicationTest.Event, "Event", $techn="Module", $descr="", $tags="", $link="")
+    Component(PetClinicApplicationTest.PetClinicApplicationTest.Vet, "Vet", $techn="Module", $descr="", $tags="", $link="")
+    Component(PetClinicApplicationTest.PetClinicApplicationTest.Billing, "Billing", $techn="Module", $descr="", $tags="", $link="")
+    Component(PetClinicApplicationTest.PetClinicApplicationTest.Owner, "Owner", $techn="Module", $descr="", $tags="", $link="")
+    Component(PetClinicApplicationTest.PetClinicApplicationTest.Pet, "Pet", $techn="Module", $descr="", $tags="", $link="")
+  }
+
+}
+
+Rel(PetClinicApplicationTest.PetClinicApplicationTest.Event, PetClinicApplicationTest.PetClinicApplicationTest.Model, "depends on", $techn="", $tags="", $link="")
+Rel(PetClinicApplicationTest.PetClinicApplicationTest.Owner, PetClinicApplicationTest.PetClinicApplicationTest.Event, "listens to", $techn="", $tags="", $link="")
+Rel(PetClinicApplicationTest.PetClinicApplicationTest.Owner, PetClinicApplicationTest.PetClinicApplicationTest.Model, "depends on", $techn="", $tags="", $link="")
+Rel(PetClinicApplicationTest.PetClinicApplicationTest.Vet, PetClinicApplicationTest.PetClinicApplicationTest.Model, "depends on", $techn="", $tags="", $link="")
+Rel(PetClinicApplicationTest.PetClinicApplicationTest.Pet, PetClinicApplicationTest.PetClinicApplicationTest.Model, "depends on", $techn="", $tags="", $link="")
+Rel(PetClinicApplicationTest.PetClinicApplicationTest.Pet, PetClinicApplicationTest.PetClinicApplicationTest.Event, "depends on", $techn="", $tags="", $link="")
+Rel(PetClinicApplicationTest.PetClinicApplicationTest.Billing, PetClinicApplicationTest.PetClinicApplicationTest.Event, "listens to", $techn="", $tags="", $link="")
+Rel(PetClinicApplicationTest.PetClinicApplicationTest.Billing, PetClinicApplicationTest.PetClinicApplicationTest.Model, "depends on", $techn="", $tags="", $link="")
+Rel(PetClinicApplicationTest.PetClinicApplicationTest.Visit, PetClinicApplicationTest.PetClinicApplicationTest.Model, "depends on", $techn="", $tags="", $link="")
+Rel(PetClinicApplicationTest.PetClinicApplicationTest.Visit, PetClinicApplicationTest.PetClinicApplicationTest.Event, "depends on", $techn="", $tags="", $link="")
+Rel(PetClinicApplicationTest.PetClinicApplicationTest.Visit, PetClinicApplicationTest.PetClinicApplicationTest.Owner, "uses", $techn="", $tags="", $link="")
+
+SHOW_LEGEND(true)
+hide stereotypes
+@enduml

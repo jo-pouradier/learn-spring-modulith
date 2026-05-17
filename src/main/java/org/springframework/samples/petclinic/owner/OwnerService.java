@@ -1,7 +1,9 @@
 package org.springframework.samples.petclinic.owner;
 
 import org.springframework.modulith.NamedInterface;
-import org.springframework.samples.petclinic.model.AddPetEvent;
+import org.springframework.modulith.events.ApplicationModuleListener;
+import org.springframework.samples.petclinic.event.AddPetEvent;
+import org.springframework.samples.petclinic.event.AddVisitEvent;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.stereotype.Service;
@@ -24,9 +26,15 @@ public class OwnerService {
 		ownerRepository.save(owner);
 	}
 
-	@TransactionalEventListener
+	@ApplicationModuleListener
 	public void addPet(AddPetEvent event) {
 		event.owner().addPet(event.pet());
+		ownerRepository.save(event.owner());
+	}
+
+	@ApplicationModuleListener
+	public void addVisit(AddVisitEvent event) {
+		event.owner().addVisit(event.petId(), event.visit());
 		ownerRepository.save(event.owner());
 	}
 
@@ -34,7 +42,4 @@ public class OwnerService {
 		return ownerRepository.findById(ownerId);
 	}
 
-	public void save(Owner owner) {
-		ownerRepository.save(owner);
-	}
 }
